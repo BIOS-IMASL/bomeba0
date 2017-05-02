@@ -61,7 +61,8 @@ class Protein:
         return len(self.sequence)
         
     def at_coords(self, resnum, at_name=None):
-        """
+       
+	"""
         Returns the coordinate of an specified residue and atom (optionally)
 
         Parameters
