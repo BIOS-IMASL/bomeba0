@@ -83,19 +83,11 @@ class Protein:
         if sele is None:
             return self.coords[offset_0 : offset_1]
 
-<<<<<<< HEAD
 	elif sele == 'sc':#sidechain_
 	    at_idx = self._names[offset_0+4 :offset_1].index(sele)
             return self.coords[offset_0 + 4+ at_idx]
-		
-	elif sele == 'bb':#backbone_
-=======
-	elif sele == 'sc':#sidechain
-	    at_idx = self._names[offset_0+4 :offset_1].index(sele)
-            return self.coords[offset_0 + 4+ at_idx]
-		
+	
 	elif sele == 'bb':#backbone
->>>>>>> 1d1b705ccee9d322af62c4e3becac1e13adfef0b
 	    at_idx = self._names[offset_0:offset_0+4].index(sele)
             return self.coords[offset_0 + 4+ at_idx]
 	
