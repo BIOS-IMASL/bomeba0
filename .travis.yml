@@ -12,7 +12,8 @@ install:
   - conda update -q conda
   # Useful for debugging any issues with conda
   - conda info -a
-  - pwd
+  - var_path=$PWD  
+  - echo $var_path
 
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy numba scipy matplotlib pandas nose
   - source activate test-environment
