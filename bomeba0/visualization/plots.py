@@ -2,18 +2,23 @@
 A collections of plots
 """
 import matplotlib.pyplot as plt
+from .kde import plot_kde
 
 
-def plot_ramachandran(pose, scatter=True, ax=None):
+def plot_ramachandran(pose, kind='scatter', contour=True, scatter_kwargs=None, ax=None):
     """
     Ramachandran plot
 
     Parameters
     ----------
     pose : protein object
-    scatter : boolean
-    if True return a scatter plot, if False a hexbin plot
-    default True
+    kind : str
+        Acepted values as `scatter`, `kde` or `sca+kde`. Defaults to scatter
+    alpha : float
+        opacity level, should be between 0 (transparent) to 1 (opaque), only works with `kind=scatter`
+    contour : bool
+        If True plot the 2D KDE using contours, otherwise plot a smooth 2D KDE. Defaults to True.
+        Only works for `kind=kde`
     ax : axes
         Matplotlib axes. Defaults to None.
 
@@ -22,7 +27,9 @@ def plot_ramachandran(pose, scatter=True, ax=None):
     ax : matplotlib axes
     """
     if ax is None:
-        _, ax = plt.subplots()
+        ax = plt.gca()
+    if scatter_kwargs == None:
+        scatter_kwargs = {}
 
     phi = []
     psi = []
@@ -30,14 +37,18 @@ def plot_ramachandran(pose, scatter=True, ax=None):
         phi.append(pose.get_phi(i))
         psi.append(pose.get_psi(i))
 
-    if scatter:
-        ax.scatter(phi, psi)
+    if kind not in ['scatter', 'kde', 'sca+kde']:
+        raise ValueError(f"kind should be 'scatter', 'hexbin' or 'kde'not {kind}")
+
+    if kind == 'scatter':
+        ax.scatter(phi, psi, **scatter_kwargs)
+    elif kind == 'kde':
+        plot_kde(phi, psi, contour, ax=ax)
     else:
-        gridsize = 100
-        #gridsize = int(2*len(phi)**(1/3))
-        # if gridsize < 36:
-        #    gridsize = 36
-        ax.hexbin(phi, psi, gridsize=gridsize, cmap=plt.cm.summer, mincnt=1)
+        scatter_kwargs.setdefault("marker", ".")
+        scatter_kwargs.setdefault("color", "k")
+        plot_kde(phi, psi, contour, ax=ax)
+        ax.scatter(phi, psi, **scatter_kwargs)
 
     ax.set_xlabel('$\phi$', fontsize=16)
     ax.set_ylabel('$\psi$', fontsize=16, rotation=0)
