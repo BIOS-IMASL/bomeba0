@@ -3,7 +3,10 @@ Protein class
 """
 import numpy as np
 import pandas as pd
+import os
 from .biomolecules import Biomolecule
+from .tube import TestTube
+from .aminoacid import aminoacid
 from ..templates.aminoacids import templates_aa, three_to_one_aa
 from ..constants import constants, rotamers, chi_ijh
 from ..pdbIO import _prot_builder_from_seq, _pdb_parser
@@ -14,7 +17,7 @@ from ..geometry import set_torsional
 class Protein(Biomolecule):
     """Protein object"""
 
-    def __init__(self, sequence=None, pdb=None, ss='strand', torsionals=None,
+    def __init__(self, sequence=None, pdb=None, name=None, ss='strand', torsionals=None,
                  regularize=False):
         """initialize a new protein from a sequence of amino acids
 
@@ -50,6 +53,20 @@ class Protein(Biomolecule):
         ----------
         Protein object
         """
+        test_tube = TestTube()
+
+        if name is None:
+            if pdb is not None:
+                self.name = os.path.splitext(pdb)[0]
+            if sequence is not None:
+                self.name = sequence[:3]
+        else:
+            self.name = name
+
+        test_tube.add(self)
+
+        self.residues = []
+
         if sequence is not None:
             self.sequence = sequence.upper()
             (self.coords,
@@ -80,6 +97,8 @@ class Protein(Biomolecule):
                         if self.sequence[i] not in ['B', 'Z']:
                             self.set_phi(i, -60)
                             self.set_psi(i, -40)
+
+            self._generate_residues()
 
         elif pdb is not None:
             (self._names,
@@ -114,52 +133,27 @@ class Protein(Biomolecule):
                         if not np.isnan(val[i+2]):
                             self.set_chi(idx, i, val[i+2])
 
+            self._generate_residues()
+
         else:
             "Please provide a sequence or a pdb file"
 
     def __repr__(self):
-        """
-        ToDo do something useful
-        """
-        return 'I am a protein'
+        return f'Protein {self.name}'
 
-    def at_coords(self, resnum, selection=None):
-        """
-        Returns the coordinate of an specified residue and atom (optionally)
+    def __getitem__(self, res):
+        return self.residues[res]
 
-        Parameters
-        ----------
-        resnum : int
-            residue number from which to obtain the coordinates
-        selection : string or None
-            selection from which to obtain the coordinates. If none is provided
-            it will return the coordinates of the whole residue (default). Use
-            'sc' for the sidechain, 'bb' for the backbone or a valid atom name.
-
-        Returns
-        ----------
-        coords: array
-            Cartesian coordinates of a given residue or a subset of atoms in a
-            given residue.
-        """
+    def _generate_residues(self):
         offsets = self._offsets
-        offset_0, offset_1 = offsets[resnum], offsets[resnum + 1]
-        rescoords = self.coords[offset_0: offset_1]
-
-        if selection is None:
-            return rescoords
-        else:
-            resname = self.sequence[resnum]
-            # this only works for structures from sequence
-            resinfo = templates_aa[resname]
-            if selection == 'sc':
-                idx = resinfo.sc
-            elif selection == 'bb':
-                idx = resinfo.bb
-            else:
-                atom_names = self._names[offset_0: offset_1]
-                idx = atom_names.index(selection)
-            return rescoords[idx]
+        for resnum in range(0, len(self)):
+            offset_0, offset_1 = offsets[resnum], offsets[resnum + 1]
+            aa = aminoacid(self.sequence[resnum],
+                           self._names[offset_0: offset_1],
+                           self.coords[offset_0: offset_1],
+                           self.occupancies[offset_0: offset_1],
+                           self.bfactors[offset_0: offset_1])
+            self.residues.append(aa)
 
     def get_phi(self, resnum):
         """
@@ -376,7 +370,7 @@ class Protein(Biomolecule):
             pass
         else:
             theta_rad = (self.get_chi(resnum, chi_num) - theta) * \
-            constants.degrees_to_radians
+                constants.degrees_to_radians
             xyz = self.coords
             i, j, idx_rot = self._rotation_indices[resnum]['chi{}'.format(chi_num)]
             set_torsional(xyz, i, j, idx_rot, theta_rad)
