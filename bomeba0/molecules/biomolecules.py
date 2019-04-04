@@ -4,8 +4,8 @@ Base classes for biomolecules
 import numpy as np
 from ..templates.aminoacids import templates_aa, one_to_three_aa
 from ..templates.glycans import templates_gl, one_to_three_gl
-from ..ff import compute_neighbors, LJ
-from ..pdbIO import _dump_pdb
+from ..energy.ff import compute_neighbors, LJ
+from ..utils.pdbIO import _dump_pdb
 from ..visualization.view3d import _view3d
 
 

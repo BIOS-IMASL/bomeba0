@@ -5,10 +5,9 @@ files
 
 import numpy as np
 import bomeba0 as bmb
-from .utils import mod, perp_vector, get_angle, get_torsional
-from .geometry import rotation_matrix_3d, set_torsional
-from .templates.aminoacids import templates_aa, one_to_three_aa, three_to_one_aa
-from .templates.glycans import templates_gl, one_to_three_gl, three_to_one_gl
+from .geometry import mod, perp_vector, get_angle, get_torsional, rotation_matrix_3d, set_torsional
+from ..templates.aminoacids import templates_aa, one_to_three_aa, three_to_one_aa
+from ..templates.glycans import templates_gl, one_to_three_gl, three_to_one_gl
 from .constants import constants
 
 
@@ -56,11 +55,9 @@ def _prot_builder_from_seq(sequence):
         axis2 = axis2 / mod(axis2) + connectionpoint
         d3 = tmp_coords[1]
         d4 = tmp_coords[2]
+        angle2 = constants.pi + get_torsional(v3, connectionpoint, d3, d4)
         if aa == 'P':
-            angle2 = constants.pi + \
-                get_torsional(v3, connectionpoint, d3, d4) - 1.5707963267948966
-        else:
-            angle2 = constants.pi + get_torsional(v3, connectionpoint, d3, d4)
+            angle2 -= - 90 * bmb.constants.degrees_to_radians
         center2 = connectionpoint
         ba = axis2 - center2
         tmp_coords = tmp_coords - center2

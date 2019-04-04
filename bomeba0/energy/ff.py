@@ -3,8 +3,8 @@ Draft of a force-field. At this point only a Lennard Jones term is implemented.
 """
 from scipy.spatial import cKDTree
 from numba import jit
-from .utils import dist
-from .constants import par_s_ij, par_eps_ij
+from ..utils.geometry import dist
+from ..utils.constants import par_s_ij, par_eps_ij
 
 
 def compute_neighbors(coords, exclusions, cut_off):

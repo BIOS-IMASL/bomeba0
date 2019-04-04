@@ -8,10 +8,9 @@ from .biomolecules import Biomolecule
 from .tube import TestTube
 from .aminoacid import aminoacid
 from ..templates.aminoacids import templates_aa, three_to_one_aa
-from ..constants import constants, rotamers, chi_ijh
-from ..pdbIO import _prot_builder_from_seq, _pdb_parser
-from ..utils import get_torsional
-from ..geometry import set_torsional
+from ..utils.constants import constants, rotamers, chi_ijh
+from ..utils.pdbIO import _prot_builder_from_seq, _pdb_parser
+from ..utils.geometry import get_torsional, set_torsional
 
 
 class Protein(Biomolecule):
