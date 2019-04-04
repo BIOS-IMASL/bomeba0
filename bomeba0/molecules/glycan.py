@@ -5,11 +5,12 @@ still very buggy, idiosyncratic, fragile and completely ad-hoc
 import numpy as np
 import pandas as pd
 from .biomolecules import Biomolecule
-from ..constants import constants
 from ..templates.glycans import templates_gl
-from ..pdbIO import _builder_from_pdb_gl
-from ..utils import get_torsional
-from ..geometry import set_torsional
+from ..utils.constants import constants
+from ..utils.pdbIO import _builder_from_pdb_gl
+from ..utils.geometry import get_torsional, set_torsional
+
+
 
 class Glycan(Biomolecule):
     """Glycan object"""

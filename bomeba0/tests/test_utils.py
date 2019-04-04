@@ -1,6 +1,6 @@
 from numpy.testing import assert_almost_equal
 import numpy as np
-from ..utils import dist, dot, cross, mod
+from ..utils.geometry import dist, dot, cross, mod
 
 p = np.array([3.115, 1.287, -0.589])
 q = np.array([6.072, 2.231, 1.554])

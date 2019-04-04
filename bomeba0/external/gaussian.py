@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from bomeba0.molecules import Protein
+from ..molecules import Protein
 
 
 def gen_tripeptides(protein=None, gaussian=True, header=None, save_pdb=True,
