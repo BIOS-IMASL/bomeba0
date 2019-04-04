@@ -136,6 +136,6 @@ class Graph:
         if context is not None:
             if context == "glycan":  # assume we will have more contexts in the future
                 pass
-                # dim, dia =  # precalculated values
+                # dim, dia =  # pre-calculated values
             #plt.plot(dim, dia, 'k.')
         plt.plot(self.dim(), self.diameter(), 'C0o')
