@@ -15,7 +15,7 @@ class Graph:
 
     def __init__(self, data):
         self.vertices = list({i for pair in data for i in pair})
-        self.N = len(self.vertices)
+        self.order = len(self.vertices)
         self.edges = data
         self.as_dict = self.get_dict()
 
@@ -55,43 +55,58 @@ class Graph:
             return True
         return False
 
-    def _find_all_paths(self, start_vertex, end_vertex, path=[]):
-        """ Find all paths from `start_vertex` to `end_vertex` in graph"""
-        graph = self.as_dict
-        path = path + [start_vertex]
-        if start_vertex == end_vertex:
-            return [path]
-        if start_vertex not in graph:
-            return []
-        paths = []
-        for vertex in graph[start_vertex]:
-            if vertex not in path:
-                extended_paths = self._find_all_paths(vertex,
-                                                      end_vertex,
-                                                      path)
-                for p in extended_paths:
-                    paths.append(p)
-        return paths
+    def single_source_shortest_path_length(self, source, cutoff=None):
+        """Compute the shortest path lengths from source to all reachable nodes.
+           Adapted from NetworkX
+
+        Parameters
+        ----------
+        source : node
+           Starting node for path
+
+        Returns
+        -------
+        lengths : dict
+            Dict keyed by node to shortest path length to source.
+        """
+        nextlevel = {source: 1}  # dict of nodes to check at next level
+        seen = {}                  # level (number of hops) when seen in BFS
+        level = 0                  # the current level
+        lengths = {}
+
+        while nextlevel:
+            thislevel = nextlevel  # advance to next level
+            nextlevel = {}         # and start a new list (fringe)
+            for v in thislevel:
+                if v not in seen:
+                    seen[v] = level  # set the level of vertex v
+                    # add neighbors of v
+                    nextlevel.update({x: {} for x in self.as_dict[v]})
+                    lengths[v] = level
+            level += 1
+        del seen
+        return lengths
 
     def diameter(self):
-        """Calculates the diameter of the graph
+        """Calculate the diameter of the graph
+           Adapted from NetworkX
 
         The diameter of a graph is the greatest distance between any pair of vertices
         """
-        v = self.vertices
-        all_pairs = [(v[i], v[j]) for i in range(len(v)-1)
-                     for j in range(i+1, len(v))]
-        shorter_paths = []
-        for (first, second) in all_pairs:
-            paths = self._find_all_paths(first, second)
-            smallest = min([len(s) for s in paths])
-            shorter_paths.append(smallest)
+        order = self.order
 
-        diameter = max(shorter_paths) - 1
-        return diameter
+        e = {}
+        for n in range(order):
+            length = self.single_source_shortest_path_length(n)
+            if len(length) != order:
+                print("Graph not connected: infinite path length")
+
+            e[n] = max(length.values())
+
+        return max(e.values())
 
     def dim(self):
-        """Calculates the finite-dimension
+        """Calculate the finite-dimension
 
         For details see:
         https://arxiv.org/abs/1508.02946
@@ -124,7 +139,7 @@ class Graph:
         return Graph(list(complement_data))
 
     def chromatic(self):
-        n = self.N
+        n = self.order
         v = self.edges
         for i in range(1, n+1):
             for p in product(range(i), repeat=n):
@@ -136,6 +151,6 @@ class Graph:
         if context is not None:
             if context == "glycan":  # assume we will have more contexts in the future
                 pass
-                # dim, dia =  # pre-calculated values
+                # dim, dia = # pre-calculated values
             #plt.plot(dim, dia, 'k.')
         plt.plot(self.dim(), self.diameter(), 'C0o')
