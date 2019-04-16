@@ -1,4 +1,5 @@
 from math import log, inf, nan
+from itertools import count
 
 
 class Graph:
