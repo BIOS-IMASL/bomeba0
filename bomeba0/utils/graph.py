@@ -1,5 +1,4 @@
 from math import log, inf, nan
-from itertools import product
 
 
 class Graph:
@@ -24,14 +23,9 @@ class Graph:
         keys are nodes and values are all the nodes connected to the key-node
         """
         as_dict = {}
-        for vertex in self.vertices:
-            values = set()
-            for pair in self.edges:
-                if vertex in pair:
-                    for e in pair:
-                        if vertex != e:
-                            values.add(e)
-            as_dict[vertex] = values
+        for a, b in self.edges:
+            as_dict.setdefault(a, set()).add(b)
+            as_dict.setdefault(b, set()).add(a)
 
         return as_dict
 
@@ -125,26 +119,36 @@ class Graph:
         return dim_f
 
     def complement(self):
-        complement_data = set()
-        v_set = set(self.vertices)
-        for k, v in self.as_dict.items():
-            c_set = v_set - v
-            c_set.remove(k)
-            for i in c_set:
-                if k > i:
-                    complement_data.add((k, i))
-                else:
-                    complement_data.add((i, k))
-
-        return Graph(list(complement_data))
+        """
+        Return the graph complement of self.
+        """
+        comp = []
+        for n, neighbors in self.as_dict.items():
+            for n2 in self.vertices:
+                if n2 not in neighbors:
+                    if n != n2:
+                        comp.append((n, n2))
+        return Graph(comp)
 
     def chromatic(self):
-        n = self.order
-        v = self.edges
-        for i in range(1, n+1):
-            for p in product(range(i), repeat=n):
-                if(0 == len([x for x in v if(p[x[0]] == p[x[1]])])):
-                    return i
+        """
+        Compute the chromatic number.
+        Greedy approach to to color a graph using as few colors as possible, where no neighbours of
+        a node can have same color as the node itself.
+        Adapted from NetworkX (greedy_color)
+        """
+        colors = {}
+        nodes = self.vertices
+        for u in nodes:
+            # Set to keep track of colors of neighbours
+            neighbour_colors = {colors[v] for v in self.as_dict[u] if v in colors}
+            # Find the first unused color.
+            for color in count():
+                if color not in neighbour_colors:
+                    break
+            # Assign the new color to the current node.
+            colors[u] = color
+        return len(set(colors.values()))
 
     def plot_dim_f(self, context=None):
         import matplotlib.pyplot as plt
