@@ -50,8 +50,8 @@ def plot_ramachandran(pose, kind='scatter', contour=True, scatter_kwargs=None, a
         plot_kde(phi, psi, contour, ax=ax)
         ax.scatter(phi, psi, **scatter_kwargs)
 
-    ax.set_xlabel('$\phi$', fontsize=16)
-    ax.set_ylabel('$\psi$', fontsize=16, rotation=0)
+    ax.set_xlabel(r'$\phi$', fontsize=16)
+    ax.set_ylabel(r'$\psi$', fontsize=16, rotation=0)
     ax.set_xlim(-180, 180)
     ax.set_ylim(-180, 180)
 

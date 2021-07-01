@@ -15,7 +15,6 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy numba pandas matplotlib pytest
   - source activate test-environment
   - conda install nglview -c conda-forge
-  - jupyter-nbextension enable nglview --py --sys-prefix
 
 script:
   - pytest

@@ -38,8 +38,8 @@ def LJ(neighbors, xyz, elements, mode='A'):
 
     .. math::
 
-    LJ_{ij} = \epsilon \left [ \left (\frac{\sigma_{ij}}{r_{ij}} \right)^{12}
-     - 2 \left (\frac{\sigma_{ij}}{r_{ij}} \right)^{6} \right]
+    LJ_{ij} = \epsilon \left [ \left (\\frac{\sigma_{ij}}{r_{ij}} \\right)^{12}
+     - 2 \left (\\frac{\sigma_{ij}}{r_{ij}} \\right)^{6} \\right]
 
     \sigma_{ij} is the distance at which the potential reaches its minimum
     \epsilon_{ij} is the depth of the potential well
