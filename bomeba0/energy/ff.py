@@ -1,6 +1,6 @@
 """
 Draft of a force-field.
-At this point only a Lennard Jones and solvation terms are implemented.
+At this point only a Lennard Jones and a solvation term are implemented.
 
 Functions assign_atom_types(), assign_params(), get_neighbors() and, 
 get_sasa() adapted from
