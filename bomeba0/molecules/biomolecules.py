@@ -42,7 +42,7 @@ class Biomolecule():
         Parameters
         ----------
         
-        nrg: string
+        nrg: str
             Energy to be calculated. It can be 'internal', 'solvation',
             or 'all'. Default 'all'.
         
