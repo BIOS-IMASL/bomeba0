@@ -298,10 +298,6 @@ def LJ(neighbors, xyz, elements):
     -------
     E_LJ: float
         Lennard Jones energy contribution
-
-    Notes
-    -----
-    A couple of details still missing (?
     """
 
     E_vdw = 0.
