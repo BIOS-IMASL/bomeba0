@@ -35,7 +35,7 @@ def test_set_get_torsionals():
     # then changing them back to original values 
     gc_0 = Glycan('{}/2LIQ_min.pdb'.format(path), linkages=[4, -3])
     a, b, c, d = gc_0.get_phi(0), gc_0.get_psi(0), gc_0.get_phi(1), gc_0.get_psi(1)
-    nrg_0 = gc_0.energy()
+    nrg_0 = gc_0.energy(nrg='internal')
     for i in range(len(gc) - 1):
         gc_0.set_phi(i, -60.)
         gc_0.set_psi(i, -40.)
@@ -49,6 +49,6 @@ def test_set_get_torsionals():
     gc_0.set_phi(1, c)
     gc_0.set_psi(1, d)
     
-    nrg_1 = gc_0.energy()
+    nrg_1 = gc_0.energy(nrg='internal')
     
     assert_almost_equal(nrg_0, nrg_1)  

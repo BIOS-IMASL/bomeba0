@@ -4,7 +4,7 @@ Base classes for biomolecules
 import numpy as np
 from ..templates.aminoacids import templates_aa, one_to_three_aa
 from ..templates.glycans import templates_gl, one_to_three_gl
-from ..energy.ff import compute_neighbors, LJ
+from ..energy.ff import compute_neighbors, LJ, get_sasa
 from ..utils.pdbIO import _dump_pdb
 from ..visualization.view3d import _view3d
 
@@ -32,13 +32,22 @@ class Biomolecule():
     def view3d(self):
         return _view3d(self)
 
-    def energy(self, cut_off=6., neighbors=None):
+    def energy(self, nrg='all', cut_off=6., neighbors=None, params=None, points=1000, selection='all', probe=1.4):
         """
-        Compute the internal energy of a molecule using a pair-wise 
-        Lennard-Jones potential.
+        Compute the internal and solvation energy of a molecule.
+        Internal energy is calculated using a pair-wise Lennard-Jones
+        potential. Solvation energy is computed using a numerical
+        approximation.
 
         Parameters
         ----------
+        
+        nrg: str
+            Energy to be calculated. It can be 'internal', 'solvation',
+            or 'all'. Default 'all'.
+        
+        For LJ energy
+        
         cut_off : float
             Only pair of atoms closer than cut_off will be used to compute the
             energy. Default 6. Only valid when neighbors is None.
@@ -46,18 +55,52 @@ class Biomolecule():
             Pairs of atoms used to compute the energy. If None (default) the
             list of neighbors will be computed using a KD-tree (from scipy),
             see ff.compute_neighbors for details.
+        
+        For Solvation energy
+        
+        params: dictionary
+            {atom: [atom's radius, atom's energy solvatation]}
+        points: interger
+            Number of point per sphere. Default 1000.
+        selection: str
+            Atoms selection
+        probe : float
+            The radius of the solvent. Default 1.4.
 
         Returns
         ----------
-        energy : float:
-            molecular energy in Kcal/mol
-
+        For LJ energy
+        
+        energy_lj : float
+            molecular energy in Kcal/mol.
+        
+        For Solvation Energy
+        
+        energy_solv: float
+            The energy of solvation from the atoms selection.
+        areas: float
+            The total solvent-accessible-surface area from the atoms selection.
+        
+        All
+        nrg_all : float
+            total molecular energy in Kcal/mol.
         """
-        coords = self.coords
-        if neighbors is None:
-            neighbors = compute_neighbors(coords, self._exclusions, cut_off)
-        energy = LJ(neighbors, coords, self._elements)
-        return energy
+        if nrg=='all' or nrg=='internal':
+            coords = self.coords
+            if neighbors is None:
+                neighbors = compute_neighbors(coords, self._exclusions, cut_off)
+            energy_lj = LJ(neighbors, coords, self._elements)
+            if nrg=='internal':
+                return energy_lj
+        
+        if nrg=='all' or nrg=='solvation':
+            energy_solv, areas = get_sasa(params, points, selection, probe)
+            if nrg=='solvation':
+                return energy_solv, areas
+        
+        if nrg=='all':
+            nrg_all = energy_lj+energy_solv
+            return nrg_all, areas
 
     def rgyr(self):
         """
