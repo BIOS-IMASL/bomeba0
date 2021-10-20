@@ -9,7 +9,6 @@ https://github.com/BIOS-IMASL/Azahar/blob/master/Azahar/energy.py
 
 import openbabel as ob
 import numpy as np
-from dictionaries import *
 from scipy.spatial.distance import cdist
 from scipy.spatial import cKDTree
 from numba import jit
