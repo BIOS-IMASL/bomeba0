@@ -7,7 +7,6 @@ get_sasa() adapted from
 https://github.com/BIOS-IMASL/Azahar/blob/master/Azahar/energy.py
 """
 
-import openbabel as ob
 import numpy as np
 from scipy.spatial.distance import cdist
 from scipy.spatial import cKDTree
@@ -15,6 +14,10 @@ from numba import jit
 from ..utils.geometry import dist
 from ..utils.constants import par_s_ij, par_eps_ij
 
+try:
+    import openbabel as ob
+except ImportError:
+    pass
 
 def assign_atom_types(selection='all'):
     """
